@@ -9,13 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,17 +27,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.cryptotrackerapp.model.Asset
-
+import com.example.cryptotrackerapp.viewmodel.AssetsViewModel
 
 
 @Composable
-fun AssetList(){
-    Column(
+fun AssetsList(viewModel: AssetsViewModel){
+    val assets=viewModel.assets
+    LaunchedEffect(Unit) {
+        viewModel.fetchAssets()
+        
+    }
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.onBackground)
     ) {
-        AssetRow(
+        items(assets){currentAsset->
+            AssetRow(asset = currentAsset)
+        }
+        /*AssetRow(
             Asset(
                 id="bitcoin",
                 name = "Bitcoin",
@@ -44,9 +55,9 @@ fun AssetList(){
                 percent = 5.75
 
             )
-        )
-        Divider()
-        AssetRow(
+        )*/
+        /*Divider()*/
+        /*AssetRow(
             Asset(
                 id="etereum",
                 name = "Ethereum",
@@ -56,7 +67,7 @@ fun AssetList(){
 
             )
 
-        )
+        )*/
     }
 }
 
@@ -83,7 +94,10 @@ fun AssetRow(asset: Asset){
             }
             else {
                 AsyncImage(model = "https://assets.coincap.io/assets/icons/btc@2x.png",
-                    contentDescription = null)
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                )
             }
         }
 
@@ -112,8 +126,8 @@ fun AssetRow(asset: Asset){
                         .padding(horizontal = 8.dp)
         )
         Text(
-            text = "${asset.percent}%",
-            color= if (asset.percent>=0) Color.Green else Color.Red,
+            text = "${asset.percentage}%",
+            color= if (asset.percentage>=0) Color.Green else Color.Red,
             fontSize = 14.sp,
             modifier = Modifier
                 .padding(horizontal = 8.dp))
@@ -124,10 +138,8 @@ fun AssetRow(asset: Asset){
     showSystemUi = true)
 @Composable
 fun AsserRowPreview(){
-    Column(
-        modifier=Modifier.fillMaxSize()
-    ) {
-        AssetList()
-    }
+    AssetsList(AssetsViewModel())
 
 }
+
+
